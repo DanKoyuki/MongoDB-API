@@ -30,7 +30,7 @@ app.post('/connectToMongoDB', async (req, res) => {
 });
 
 // Server Test
-app.get('/home', (req, res) => {
+app.get('/', (req, res) => {
   res.status(200).json('Welcome, your app is working well');
 })
 
