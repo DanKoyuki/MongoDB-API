@@ -29,6 +29,11 @@ app.post('/connectToMongoDB', async (req, res) => {
   }
 });
 
+// Server Test
+app.get('/home', (req, res) => {
+  res.status(200).json('Welcome, your app is working well');
+})
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
