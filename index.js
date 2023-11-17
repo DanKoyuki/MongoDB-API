@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const connectToMongoDB = require('./connectToMongoDB');
+const connectToMongoDB = require('./mongoConnection');
 
 // API START HERE
 app.use(express.json());

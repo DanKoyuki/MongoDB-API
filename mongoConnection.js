@@ -22,4 +22,4 @@ async function connectToMongoDB(pConnectionString) {
 
 }
 
-module.export = connectToMongoDB;
+module.exports = connectToMongoDB;
