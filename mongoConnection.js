@@ -30,7 +30,33 @@ async function disconnectFromMongoDB(){
   }
 }
 
+async function getListDatabases(){
+  if (instance != null) {
+    try {
+      const databases = await instance.db().admin().listDatabases(); // Call listDatabases() with parentheses
+      return databases.databases.map(db => db.name); // Extract only the database names
+    } catch (error) {
+      console.error('Error fetching databases:', error);
+      throw error;
+    }
+  }
+  return []; // Return an empty array if instance is null
+}
+
+async function createDatabase(pDBName){
+  if (instance != null) {
+    await instance.db(pDBName)
+  }
+}
+
+async function removeDatabase(pDBName){
+  if (instance != null) {
+    await instance.db(pDBName).dropDatabase();
+  }
+}
+
 module.exports = {
   connectToMongoDB,
-  disconnectFromMongoDB
+  disconnectFromMongoDB,
+  getListDatabases
 };

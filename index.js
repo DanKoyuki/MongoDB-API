@@ -43,6 +43,20 @@ app.post('/disconnectFromMongoDB', async (req, res) => {
   }
 });
 
+// Get List of Databases
+app.post('/getDatabases', async (req, res) => {
+  try {
+    let list;
+    if (mongoConnected) {
+      list = await connectionDB.getListDatabases();
+    }
+    res.json({list});
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Retrieve Databases!')
+  }
+});
+
 // Server Test
 app.get('/', (req, res) => {
   res.status(200).json('Welcome, your app is working well');
