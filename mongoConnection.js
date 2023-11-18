@@ -1,5 +1,6 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
+var instance;
 
 async function connectToMongoDB(pConnectionString) {
   const client = new MongoClient(pConnectionString, {
@@ -9,6 +10,7 @@ async function connectToMongoDB(pConnectionString) {
       deprecationErrors: true,
     }
   });
+  instance = client;
 
   try {
     // Connect to the MongoDB cluster
@@ -22,4 +24,13 @@ async function connectToMongoDB(pConnectionString) {
 
 }
 
-module.exports = connectToMongoDB;
+async function disconnectFromMongoDB(){
+  if (instance!=null) {
+    await instance.close() // close connection
+  }
+}
+
+module.exports = {
+  connectToMongoDB,
+  disconnectFromMongoDB
+};

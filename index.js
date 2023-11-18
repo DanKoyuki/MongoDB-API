@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const connectToMongoDB = require('./mongoConnection');
+const connectionDB = require('./mongoConnection');
 
 // API START HERE
 app.use(express.json());
@@ -19,13 +19,27 @@ app.post('/connectToMongoDB', async (req, res) => {
       }
 
       // Connect to MongoDB Atlas if not already connected
-      await connectToMongoDB(uri);
+      await connectionDB.connectToMongoDB(uri);
       mongoConnected = true;
     }
     res.json({ message: 'Connected to MongoDB Atlas' });
   } catch (e) {
     console.error(e);
     res.status(500).send('Error connecting to MongoDB Atlas');
+  }
+});
+
+// Disconnect from MongoDB
+app.post('/disconnectFromMongoDB', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      await connectionDB.disconnectFromMongoDB();
+      mongoConnected = false;
+    }
+    res.json({ message: 'Disconnected From Atlas'});
+  } catch (e){
+    console.error(e);
+    res.status(500).send('Unable to Disconnect, Please check your connection!')
   }
 });
 
