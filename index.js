@@ -22,7 +22,7 @@ app.post('/connectToMongoDB', async (req, res) => {
       await connectToMongoDB(uri);
       mongoConnected = true;
     }
-    res.send('Connected to MongoDB Atlas');
+    res.json({ message: 'Connected to MongoDB Atlas' });
   } catch (e) {
     console.error(e);
     res.status(500).send('Error connecting to MongoDB Atlas');
