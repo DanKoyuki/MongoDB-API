@@ -57,6 +57,36 @@ app.post('/getDatabases', async (req, res) => {
   }
 });
 
+// Create Database
+app.post('/createDatabase', async (req, res) => {
+  try {
+    if (mongoConnected){
+      const vDBName = req.body;
+  
+      await connectionDB.createDatabase(vBDName);
+    }
+    res.json({message: "Database Created!"})
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Create Database!')
+  }
+})
+
+// Remove Database
+app.post('/createDatabase', async (req, res) => {
+  try {
+    if (mongoConnected){
+      const vDBName = req.body;
+  
+      await connectionDB.removeDatabase(vBDName);
+    }
+    res.json({message: "Database Removed!"})
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Remove Database!')
+  }
+})
+
 // Server Test
 app.get('/', (req, res) => {
   res.status(200).json('Welcome, your app is working well');

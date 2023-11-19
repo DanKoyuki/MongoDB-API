@@ -1,6 +1,7 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 var instance;
+var database;
 
 async function connectToMongoDB(pConnectionString) {
   const client = new MongoClient(pConnectionString, {
@@ -45,18 +46,30 @@ async function getListDatabases(){
 
 async function createDatabase(pDBName){
   if (instance != null) {
-    await instance.db(pDBName)
+    try {
+      database = await instance.db(pDBName) 
+    } catch (error) {
+      console.error('Error creating database:', error);
+      throw error;
+    }
   }
 }
 
 async function removeDatabase(pDBName){
   if (instance != null) {
-    await instance.db(pDBName).dropDatabase();
+    try {
+      await instance.db(pDBName).dropDatabase();
+    } catch (error) {
+      console.error('Error removing database:', error);
+      throw error;
+    }
   }
 }
 
 module.exports = {
   connectToMongoDB,
   disconnectFromMongoDB,
-  getListDatabases
+  getListDatabases,
+  createDatabase,
+  removeDatabase
 };
