@@ -60,32 +60,43 @@ app.post('/getDatabases', async (req, res) => {
 // Create Database
 app.post('/createDatabase', async (req, res) => {
   try {
-    if (mongoConnected){
+    if (mongoConnected) {
       const vDBName = req.body.vDBName;
-  
+
+      if (!vDBName) {
+        return res.status(400).send('Database name is required');
+      }
+
       await connectionDB.createDatabase(vDBName);
+      return res.json({ message: 'Database Created!' });
     }
-    res.json({message: "Database Created!"})
+    res.status(500).send('MongoDB not connected!');
   } catch (e) {
     console.error(e);
-    res.status(500).send('Unable to Create Database!')
+    res.status(500).send('Unable to Create Database!');
   }
-})
+});
 
 // Remove Database
 app.post('/removeDatabase', async (req, res) => {
   try {
-    if (mongoConnected){
+    if (mongoConnected) {
       const vDBName = req.body.vDBName;
-  
+
+      if (!vDBName) {
+        return res.status(400).send('Database name is required');
+      }
+
       await connectionDB.removeDatabase(vDBName);
+      return res.json({ message: 'Database Removed!' });
     }
-    res.json({message: "Database Removed!"})
+    res.status(500).send('MongoDB not connected!');
   } catch (e) {
     console.error(e);
-    res.status(500).send('Unable to Remove Database!')
+    res.status(500).send('Unable to Remove Database!');
   }
-})
+});
+
 
 // Server Test
 app.get('/', (req, res) => {

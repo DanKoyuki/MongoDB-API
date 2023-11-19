@@ -1,7 +1,6 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 var instance;
-var database;
 
 async function connectToMongoDB(pConnectionString) {
   const client = new MongoClient(pConnectionString, {
@@ -47,7 +46,10 @@ async function getListDatabases(){
 async function createDatabase(pDBName){
   if (instance != null) {
     try {
-      database = await instance.db(pDBName) 
+      const db = await instance.db(pDBName) 
+
+      await db.createCollection('dummyCollection');
+
     } catch (error) {
       console.error('Error creating database:', error);
       throw error;
