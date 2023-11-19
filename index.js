@@ -73,7 +73,7 @@ app.post('/createDatabase', async (req, res) => {
 })
 
 // Remove Database
-app.post('/createDatabase', async (req, res) => {
+app.post('/removeDatabase', async (req, res) => {
   try {
     if (mongoConnected){
       const vDBName = req.body;
