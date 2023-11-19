@@ -63,7 +63,7 @@ app.post('/createDatabase', async (req, res) => {
     if (mongoConnected){
       const vDBName = req.body.vDBName;
   
-      await connectionDB.createDatabase(vBDName);
+      await connectionDB.createDatabase(vDBName);
     }
     res.json({message: "Database Created!"})
   } catch (e) {
@@ -78,7 +78,7 @@ app.post('/removeDatabase', async (req, res) => {
     if (mongoConnected){
       const vDBName = req.body.vDBName;
   
-      await connectionDB.removeDatabase(vBDName);
+      await connectionDB.removeDatabase(vDBName);
     }
     res.json({message: "Database Removed!"})
   } catch (e) {
