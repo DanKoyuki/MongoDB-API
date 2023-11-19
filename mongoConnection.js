@@ -60,7 +60,9 @@ async function createDatabase(pDBName){
 async function removeDatabase(pDBName){
   if (instance != null) {
     try {
-      await instance.db(pDBName).dropDatabase();
+      const db = instance.db(pDBName)
+
+      await db.dropDatabase();
     } catch (error) {
       console.error('Error removing database:', error);
       throw error;
