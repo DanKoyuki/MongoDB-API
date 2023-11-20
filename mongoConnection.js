@@ -126,7 +126,17 @@ async function selectCollection(pCollectionName){
   }
 }
 
+// Document Section
 
+// async function getListDocument(){
+//   if (selectCollection != null) {
+//     try {
+//       const documents = await selected_collection.
+//     } catch (error) {
+//       throw error 
+//     }
+//   }
+// }
 
 module.exports = {
   connectToMongoDB,

@@ -97,6 +97,38 @@ app.post('/removeDatabase', async (req, res) => {
   }
 });
 
+// Select Database
+app.post('/selectDatabase', async (req, res) => {
+  try {
+    if (mongoConnected){
+      const vDBName = req.body.vDBName;
+
+      if (!vDBName) {
+        return res.status(400).send('Database name is required');
+      }
+
+      await connectionDB.selectDatabase(vDBName);
+      return res.json({ message: 'Database Selected!'});
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Remove Database!');
+  }
+})
+
+// Get List Collection
+app.post('/getCollections', async (req, res) => {
+  try {
+    let list;
+    if (mongoConnected) {
+      list = await connectionDB.getListCollection();
+    }
+    res.json({list});
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Retrieve Collections!')
+  }
+})
 
 // Server Test
 app.get('/', (req, res) => {
