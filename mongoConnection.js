@@ -1,6 +1,11 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
+// Helper
 var instance;
+var selected_database;
+var selected_collection;
+
+// Connection Section
 
 async function connectToMongoDB(pConnectionString) {
   const client = new MongoClient(pConnectionString, {
@@ -30,6 +35,8 @@ async function disconnectFromMongoDB(){
   }
 }
 
+// Database Section
+
 async function getListDatabases(){
   if (instance != null) {
     try {
@@ -46,7 +53,7 @@ async function getListDatabases(){
 async function createDatabase(pDBName){
   if (instance != null) {
     try {
-      const db = await instance.db(pDBName) 
+      const db = await instance.db(pDBName);
 
       await db.createCollection('dummyCollection');
 
@@ -60,7 +67,7 @@ async function createDatabase(pDBName){
 async function removeDatabase(pDBName){
   if (instance != null) {
     try {
-      const db = instance.db(pDBName)
+      const db = await instance.db(pDBName);
 
       await db.dropDatabase();
     } catch (error) {
@@ -70,10 +77,66 @@ async function removeDatabase(pDBName){
   }
 }
 
+async function selectDatabase(pDBName){
+  if (instance != null){
+    try {
+      selected_database = instance.db(pDBName);
+    } catch (e) {
+      throw e;
+    }
+  }
+}
+
+// Collection Section
+
+async function getListCollection(){
+  if (selected_database != null) {
+    const collections = await selected_database.listCollections();
+    return collections.collections.map(collect => collect.name);
+  }
+}
+
+async function createACollection(pCollectionName){
+  if (selected_database != null) {
+    try{
+      await selected_database.createCollection(pCollectionName);
+    } catch(err) {
+      throw err
+    }
+  }
+}
+
+async function removeACollection(pCollectionName){
+  if (selected_database != null) {
+    try{
+      await selected_database.dropCollection(pCollectionName);
+    } catch(err) {
+      throw err
+    }
+  }
+}
+
+async function selectCollection(pCollectionName){
+  if (selected_database != null){
+    try {
+      selected_collection = selected_database.collection(pCollectionName);
+    } catch (error) {
+      throw error
+    }
+  }
+}
+
+
+
 module.exports = {
   connectToMongoDB,
   disconnectFromMongoDB,
   getListDatabases,
   createDatabase,
-  removeDatabase
+  removeDatabase,
+  selectDatabase,
+  getListCollection,
+  createACollection,
+  removeACollection,
+  selectCollection
 };
