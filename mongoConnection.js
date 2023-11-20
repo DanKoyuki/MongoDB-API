@@ -91,8 +91,13 @@ async function selectDatabase(pDBName){
 
 async function getListCollection(){
   if (selected_database != null) {
-    const collections = await selected_database.listCollections();
-    return collections.collections.map(collect => collect.name);
+    try {
+      const collections = await selected_database.listCollections();
+      return collections.collections.map(collect => collect.name);
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+      throw error;
+    }
   }
 }
 
