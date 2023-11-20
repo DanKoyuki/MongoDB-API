@@ -93,6 +93,7 @@ async function getListCollection(){
   if (selected_database != null) {
     try {
       const collections = await selected_database.listCollections().toArray();
+      console.log(collections);
       return collections.collections.map(collect => collect.name);
     } catch (error) {
       console.error('Error fetching collections:', error);
