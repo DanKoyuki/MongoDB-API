@@ -1,12 +1,17 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-// Helper
+// Helper,
+// instance used to take connection setting
+// selected_database used to take current working database
+// selected_collection used to take current working collection
 var instance;
 var selected_database;
 var selected_collection;
 
-// Connection Section
 
+// Connection Section
+// connectToMongoDB, create a connection to MongoDB Atlas Cluster using Connection String for node.js
+// params@pConnectionString = Connection String
 async function connectToMongoDB(pConnectionString) {
   const client = new MongoClient(pConnectionString, {
     serverApi: {
@@ -29,6 +34,7 @@ async function connectToMongoDB(pConnectionString) {
 
 }
 
+// disonnectFromMongoDB, close current connection
 async function disconnectFromMongoDB(){
   if (instance!=null) {
     await instance.close() // close connection
@@ -36,7 +42,8 @@ async function disconnectFromMongoDB(){
 }
 
 // Database Section
-
+// getListDatabases, return all database that exist in the cluster
+// return@list(db.name)
 async function getListDatabases(){
   if (instance != null) {
     try {
@@ -50,6 +57,8 @@ async function getListDatabases(){
   return []; // Return an empty array if instance is null
 }
 
+// createDatabase, Create new Database within the Cluster and populate it with dummyCollection
+// params@pDBName = Name of Database that will be created
 async function createDatabase(pDBName){
   if (instance != null) {
     try {
@@ -64,6 +73,9 @@ async function createDatabase(pDBName){
   }
 }
 
+
+// removeDatabase, Remove exist Database along with all collection within that database.
+// params@pDBName = Name of Database that will be removed
 async function removeDatabase(pDBName){
   if (instance != null) {
     try {
@@ -77,6 +89,8 @@ async function removeDatabase(pDBName){
   }
 }
 
+// selectDatabase, Select an existing Database to work with.
+// params@pDBName = Name of Database to be selected
 async function selectDatabase(pDBName){
   if (instance != null){
     try {
@@ -89,6 +103,7 @@ async function selectDatabase(pDBName){
   }
 }
 
+// unselectDatabase, Beta Function.. Unused..
 async function unselectDatabase(){
   if (selected_database != null) {
     try {
@@ -100,7 +115,8 @@ async function unselectDatabase(){
 }
 
 // Collection Section
-
+// getListCollection, get list of Collection Name that exist within a selected_database
+// return@list(collection.name)
 async function getListCollection() {
   if (selected_database != null) {
     try {
@@ -115,6 +131,10 @@ async function getListCollection() {
   }
 }
 
+// createACollection, creating new Collection
+// removeACollection, remove existing Collection. This will also remove the Documents with in it.
+// selectCollection, select existing Collection to work with.
+// params@pCollectionName = Collection Name to be created, removed, selected
 async function createACollection(pCollectionName){
   if (selected_database != null) {
     try{
