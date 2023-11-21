@@ -102,15 +102,16 @@ async function unselectDatabase(){
 async function getListCollection() {
   if (selected_database != null) {
     try {
-      // const collections = selected_database.listCollections().toArray();
-      const collections = selected_database.listCollections();
+      const collections = selected_database.listCollections().toArray();
+      const collectionNames = collections.list.map(collection => collection.name);
       console.log('Collections:', collections); // Log the collection names
-      return collections;
+      return collectionNames;
     } catch (error) {
       console.error('Error fetching collections:', error);
       throw error;
     }
   }
+  return [];
 }
 
 async function createACollection(pCollectionName){
