@@ -102,7 +102,8 @@ async function unselectDatabase(){
 async function getListCollection() {
   if (selected_database != null) {
     try {
-      const collections = selected_database.listCollections().toArray();
+      // const collections = selected_database.listCollections().toArray();
+      const collections = selected_database.listCollections();
       console.log('Collections:', collections); // Log the collection names
       return collections;
     } catch (error) {
