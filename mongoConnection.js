@@ -92,7 +92,7 @@ async function selectDatabase(pDBName){
 async function getListCollection() {
   if (selected_database != null) {
     try {
-      const collections = selected_database.listCollections().toArray();
+      const collections = selected_database.listCollections();
       const collectionNames = collections.collections.map(collect => collect.name);
       console.log('Collections:', collectionNames); // Log the collection names
       return collectionNames;
