@@ -97,6 +97,19 @@ app.post('/removeDatabase', async (req, res) => {
   }
 });
 
+// Unselect Database
+app.post('/unselectDatabases', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      await connectionDB.unselectDatabase();
+    }
+    res.json({message: 'Unselected!'});
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Retrieve Databases!')
+  }
+});
+
 // Select Database
 app.post('/selectDatabase', async (req, res) => {
   try {

@@ -87,6 +87,16 @@ async function selectDatabase(pDBName){
   }
 }
 
+async function unselectDatabase(){
+  if (selected_database != null) {
+    try {
+      selected_database = null;
+    } catch (e) {
+      throw e;
+    }
+  }
+}
+
 // Collection Section
 
 async function getListCollection() {
@@ -151,6 +161,7 @@ module.exports = {
   createDatabase,
   removeDatabase,
   selectDatabase,
+  unselectDatabase,
   getListCollection,
   createACollection,
   removeACollection,
