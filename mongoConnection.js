@@ -81,6 +81,8 @@ async function selectDatabase(pDBName){
   if (instance != null){
     try {
       selected_database = instance.db(pDBName);
+
+      await getListCollection()
     } catch (e) {
       throw e;
     }
@@ -111,7 +113,6 @@ async function getListCollection() {
       throw error;
     }
   }
-  return [];
 }
 
 async function createACollection(pCollectionName){
