@@ -102,9 +102,10 @@ async function unselectDatabase(){
 async function getListCollection() {
   if (selected_database != null) {
     try {
-      const collections = selected_database.listCollections().toArray();
-      const collectionNames = collections.list.map(collection => collection.name);
-      console.log('Collections:', collections); // Log the collection names
+      const collectionsString = await selected_database.listCollections().toArray(); // Assuming this returns a JSON string
+      const collections = JSON.parse(collectionsString); // Parse the JSON string to an object
+      const collectionNames = collections.list.map(collection => collection.name); // Extract collection names
+      console.log('Collections:', collectionNames); // Log the collection names
       return collectionNames;
     } catch (error) {
       console.error('Error fetching collections:', error);
