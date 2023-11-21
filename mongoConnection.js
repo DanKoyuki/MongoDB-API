@@ -104,9 +104,7 @@ async function getListCollection() {
     try {
       const collectionsString = await selected_database.listCollections().toArray(); // Assuming this returns a JSON string
       const collections = JSON.parse(collectionsString); // Parse the JSON string to an object
-      const collectionNames = collections.list.map(collection => collection.name); // Extract collection names
-      console.log('Collections:', collectionNames); // Log the collection names
-      return collectionNames;
+      return collections.list.map(collection => collection.name); // Extract collection names
     } catch (error) {
       console.error('Error fetching collections:', error);
       throw error;
