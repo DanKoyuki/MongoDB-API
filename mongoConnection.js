@@ -91,23 +91,20 @@ async function removeDatabase(pDBName){
 
 // selectDatabase, Select an existing Database to work with.
 // params@pDBName = Name of Database to be selected
-async function selectDatabase(pDBName){
-  if (instance != null){
-    try {
-      selected_database = instance.db(pDBName);
-
-      await getListCollection()
-    } catch (e) {
-      throw e;
+async function selectDatabase(pDBName) {
+  if (instance != null) {
+    if (selected_database !== null) {
+      try {
+        // Clean the previous selection
+        selected_database = null;
+      } catch (e) {
+        throw e;
+      }
     }
-  }
-}
-
-// unselectDatabase, Beta Function.. Unused..
-async function unselectDatabase(){
-  if (selected_database != null) {
+    
     try {
-      selected_database = null;
+      // Populate selected_database with the user selection from frontend
+      selected_database = instance.db(pDBName);
     } catch (e) {
       throw e;
     }
@@ -184,7 +181,6 @@ module.exports = {
   createDatabase,
   removeDatabase,
   selectDatabase,
-  unselectDatabase,
   getListCollection,
   createACollection,
   removeACollection,
