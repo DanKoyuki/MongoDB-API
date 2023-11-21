@@ -92,7 +92,7 @@ async function selectDatabase(pDBName){
 async function getListCollection() {
   if (selected_database != null) {
     try {
-      const collections = instance.db("Belajar").listCollections().toArray();
+      const collections = instance.db("Belajar").getCollectionNames();
       // const collections = selected_database.listCollections().toArray();
       console.log('Collections:', collections); // Log the collection names
       return collections;
