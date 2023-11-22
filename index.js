@@ -97,19 +97,6 @@ app.post('/removeDatabase', async (req, res) => {
   }
 });
 
-// Unselect Database
-app.post('/unselectDatabases', async (req, res) => {
-  try {
-    if (mongoConnected) {
-      await connectionDB.unselectDatabase();
-    }
-    res.json({message: 'Unselected!'});
-  } catch (e) {
-    console.error(e);
-    res.status(500).send('Unable to Retrieve Databases!')
-  }
-});
-
 // Select Database
 app.post('/selectDatabase', async (req, res) => {
   try {
@@ -125,7 +112,7 @@ app.post('/selectDatabase', async (req, res) => {
     }
   } catch (e) {
     console.error(e);
-    res.status(500).send('Unable to Remove Database!');
+    res.status(500).send('Unable to Select Database!');
   }
 })
 
@@ -140,6 +127,65 @@ app.post('/getCollections', async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).send('Unable to Retrieve Collections!')
+  }
+})
+
+// Create Collection
+app.post('/createCollection', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      const vCollectionName = req.body.vCollectionName;
+
+      if (!vCollectionName) {
+        return res.status(400).send('Collection name is required');
+      }
+
+      await connectionDB.createACollection(vCollectionName);
+      return res.json({ message: 'Collection Created!' });
+    }
+    res.status(500).send('MongoDB not connected!');
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Create Collection!');
+  }
+});
+
+// Remove Collection
+app.post('/removeCollection', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      const vCollectionName = req.body.vCollectionName;
+
+      if (!vCollectionName) {
+        return res.status(400).send('Collection name is required');
+      }
+
+      await connectionDB.removeACollection(vCollectionName);
+      return res.json({ message: 'Collection Removed!' });
+    }
+    res.status(500).send('MongoDB not connected!');
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Remove Collection!');
+  }
+});
+
+// Select Collection
+app.post('/selectCollection', async (req, res) => {
+  try {
+    if (mongoConnected){
+      const vCollectionName = req.body.vCollectionName;
+
+      if (!vCollectionName) {
+        return res.status(400).send('Collection name is required');
+      }
+
+      await connectionDB.selectCollection(vCollectionName);
+      return res.json({ message: 'Collection Selected!'});
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Select Collection!');
   }
 })
 

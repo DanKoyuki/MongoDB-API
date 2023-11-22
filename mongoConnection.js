@@ -153,13 +153,25 @@ async function removeACollection(pCollectionName){
 }
 
 async function selectCollection(pCollectionName){
-  if (selected_database != null){
+
+  if (selected_database !== null) {
+    if (selected_collection !== null) {
+      try {
+        // Clean the previous selection
+        selected_collection = null;
+      } catch (e) {
+        throw e;
+      }
+    }
+    
     try {
-      selected_collection = selected_database.collection(pCollectionName);
-    } catch (error) {
-      throw error
+      // Populate selected_collection with the user selection from frontend
+      selected_collection = selected_database.collection(pCollectionName)
+    } catch (e) {
+      throw e;
     }
   }
+
 }
 
 // Document Section
