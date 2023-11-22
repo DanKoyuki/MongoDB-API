@@ -186,6 +186,58 @@ async function getListDocument(){
   }
 }
 
+async function selectDocument(pID){
+  if (selected_collection != null) {
+    try {
+      const query = {_id : pID};
+      const doc = await selected_collection.findOne(query);
+      return doc; 
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+async function removeDocument(pID){
+  if (selected_collection != null) {
+    try {
+      const query = {_id : pID};
+      await selected_collection.deleteOne(query);
+      console.log("Document Removed!")
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+async function updateDocument(pID, pDoc){
+  if (selected_collection != null) {
+    try {
+      const filter = {_id : pID};
+      const options = {upsert : true};
+      const updateDocs = {
+        $set: pDoc
+      };
+      
+      await selected_collection.updateOne(filter, updateDocs, options);
+      console.log("Document Updated");
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+async function insertDocument(pDoc){
+  if (selected_collection != null) {
+    try {
+      const doc = await selected_collection.insertOne(pDoc);
+      return doc; 
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
 module.exports = {
   connectToMongoDB,
   disconnectFromMongoDB,
@@ -196,5 +248,10 @@ module.exports = {
   getListCollection,
   createACollection,
   removeACollection,
-  selectCollection
+  selectCollection,
+  getListDocument,
+  selectDocument,
+  removeDocument,
+  updateDocument,
+  insertDocument
 };
