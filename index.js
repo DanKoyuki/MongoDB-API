@@ -189,7 +189,24 @@ app.post('/selectCollection', async (req, res) => {
   }
 })
 
+/* getListDocument,
+  selectDocument,
+  removeDocument,
+  updateDocument,
+  insertDocument */
 
+  app.post('/getDocument', async (req, res) => {
+    try {
+      let list;
+      if (mongoConnected) {
+        list = await connectionDB.getListDocument();
+      }
+      res.json({list});
+    } catch (e) {
+      console.error(e);
+      res.status(500).send('Unable to Retrieve Collections!')
+    }
+  })  
 
 // Server Test
 app.get('/', (req, res) => {
