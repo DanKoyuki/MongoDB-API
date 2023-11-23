@@ -177,7 +177,7 @@ async function selectCollection(pCollectionName){
 // Document Section
 
 async function getListDocument(){
-  if (selectCollection != null) {
+  if (selected_collection != null) {
     try {
       const documents = await selected_collection.find();
       return documents;
