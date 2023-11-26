@@ -179,7 +179,7 @@ async function selectCollection(pCollectionName){
 async function getListDocument(){
   if (selected_collection != null) {
     try {
-      const documents = await selected_collection.find();
+      const documents = await selected_collection.find().toArray();
       return documents;
     } catch (error) {
       throw error 
