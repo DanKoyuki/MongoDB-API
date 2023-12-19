@@ -189,11 +189,110 @@ app.post('/selectCollection', async (req, res) => {
   }
 })
 
-/* getListDocument,
-  selectDocument,
-  removeDocument,
-  updateDocument,
-  insertDocument */
+// Get List of Documents in a Collection
+app.post('/getDocuments', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      const vCollectionName = req.body.vCollectionName;
+
+      if (!vCollectionName) {
+        return res.status(400).send('Collection name is required');
+      }
+
+      const documents = await connectionDB.getListDocument(vCollectionName);
+      return res.json({ documents });
+    }
+    res.status(500).send('MongoDB not connected!');
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Retrieve Documents!');
+  }
+});
+
+// Select Document
+app.post('/selectDocument', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      const vCollectionName = req.body.vCollectionName;
+      const pID = req.body.pID; // Assuming the document ID is sent in the request body
+
+      if (!vCollectionName || !pID) {
+        return res.status(400).send('Collection name and document ID are required');
+      }
+
+      const document = await connectionDB.selectDocument(pID);
+      return res.json({ document });
+    }
+    res.status(500).send('MongoDB not connected!');
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Select Document!');
+  }
+});
+
+// Remove Document
+app.post('/removeDocument', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      const vCollectionName = req.body.vCollectionName;
+      const pID = req.body.pID; // Assuming the document ID is sent in the request body
+
+      if (!vCollectionName || !pID) {
+        return res.status(400).send('Collection name and document ID are required');
+      }
+
+      await connectionDB.removeDocument(pID);
+      return res.json({ message: 'Document Removed!' });
+    }
+    res.status(500).send('MongoDB not connected!');
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Remove Document!');
+  }
+});
+
+// Update Document
+app.post('/updateDocument', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      const vCollectionName = req.body.vCollectionName;
+      const pID = req.body.pID; // Assuming the document ID is sent in the request body
+      const pDoc = req.body.pDoc; // Assuming the updated document is sent in the request body
+
+      if (!vCollectionName || !pID || !pDoc) {
+        return res.status(400).send('Collection name, document ID, and updated document are required');
+      }
+
+      await connectionDB.updateDocument(pID, pDoc);
+      return res.json({ message: 'Document Updated!' });
+    }
+    res.status(500).send('MongoDB not connected!');
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Update Document!');
+  }
+});
+
+// Insert Document
+app.post('/insertDocument', async (req, res) => {
+  try {
+    if (mongoConnected) {
+      const vCollectionName = req.body.vCollectionName;
+      const pDoc = req.body.pDoc; // Assuming the new document is sent in the request body
+
+      if (!vCollectionName || !pDoc) {
+        return res.status(400).send('Collection name and new document are required');
+      }
+
+      const insertedDoc = await connectionDB.insertDocument(pDoc);
+      return res.json({ message: 'Document Inserted!', insertedDoc });
+    }
+    res.status(500).send('MongoDB not connected!');
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Unable to Insert Document!');
+  }
+});
 
   app.post('/getDocument', async (req, res) => {
     try {
