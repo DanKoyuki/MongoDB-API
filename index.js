@@ -206,7 +206,32 @@ app.post('/selectCollection', async (req, res) => {
       console.error(e);
       res.status(500).send('Unable to Retrieve Collections!')
     }
-  })  
+  });
+
+  app.post('/selectDocument', async (req, res) => {
+    try{
+      let doc;
+      if(mongoConnected) {
+        doc = await connectionDB.selectDocument(req.body.ID);
+        res.json(doc);
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).send("Unable to retrieve Document");
+    }
+  });
+
+  app.post('/removeDocument', (req, res) => {
+
+  });
+
+  app.post('/updateDocument', (req, res) => {
+
+  });
+
+  app.post('/createDocument', (req, res) => {
+
+  });
 
 // Server Test
 app.get('/', (req, res) => {
