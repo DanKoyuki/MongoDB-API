@@ -294,7 +294,7 @@ app.post('/insertDocument', async (req, res) => {
   }
 });
 
-  app.post('/getDocument', async (req, res) => {
+  app.post('/getDocumentII', async (req, res) => {
     try {
       let list;
       if (mongoConnected) {
