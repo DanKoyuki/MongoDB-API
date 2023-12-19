@@ -12,10 +12,13 @@ Note: This is a beginner project, serving as a learning endeavor. While function
 - `npm install express mongodb`
 
 ## Usage
-- You can deploy it on your own using Vercel or use `https://mongo-db-api-coral.vercel.app/` and add the endpoint.
+- You can deploy it on your own using Vercel or use `https://mongo-db-api-coral.vercel.app/`[endpoint].
 
 ## Credits
 - MongoDB Atlas Node.js Drivers
+
+## Collaborators
+- MiqbalF2021
 
 ## Contact
 - Email: dankoyuki398@gmail.com
