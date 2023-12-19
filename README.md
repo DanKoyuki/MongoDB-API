@@ -18,7 +18,7 @@ Note: This is a beginner project, serving as a learning endeavor. While function
 - MongoDB Atlas Node.js Drivers
 
 ## Collaborators
-- MIqbal
+- MiqbalF2021
 
 ## Contact
 - Email: dankoyuki398@gmail.com
