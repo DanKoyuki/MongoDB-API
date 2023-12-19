@@ -307,7 +307,7 @@ app.post('/insertDocument', async (req, res) => {
     }
   });
 
-  app.post('/selectDocument', async (req, res) => {
+  app.post('/selectDocumentII', async (req, res) => {
     try{
       let doc;
       if(mongoConnected) {
