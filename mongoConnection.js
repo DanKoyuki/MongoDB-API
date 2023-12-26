@@ -7,12 +7,16 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 var instance;
 var selected_database;
 var selected_collection;
+const connection = new Map(); // new Version of instance
+const userDatabase = new Map(); // new Version of selected_database
+const userCollection = new Map(); // new Version of selected_collection
 
 
 // Connection Section
 // connectToMongoDB, create a connection to MongoDB Atlas Cluster using Connection String for node.js
 // params@pConnectionString = Connection String
-async function connectToMongoDB(pConnectionString) {
+// params@pUserId = user connected to the app
+async function connectToMongoDB(pConnectionString, pUserId) {
   const client = new MongoClient(pConnectionString, {
     serverApi: {
       version: ServerApiVersion.v1,
@@ -20,11 +24,12 @@ async function connectToMongoDB(pConnectionString) {
       deprecationErrors: true,
     }
   });
-  instance = client;
 
+  connection.set(pUserId, client);
+  
   try {
     // Connect to the MongoDB cluster
-    await client.connect();
+    await connection.get(pUserId).connect();
 
     // Make the appropriate DB calls
     console.log("Connected to MongoDB Atlas");
@@ -35,9 +40,10 @@ async function connectToMongoDB(pConnectionString) {
 }
 
 // disonnectFromMongoDB, close current connection
-async function disconnectFromMongoDB(){
-  if (instance!=null) {
-    await instance.close() // close connection
+async function disconnectFromMongoDB(pUserId){
+  if (connection.has(pUserId)) {
+    await connection.get(pUserId).close();
+    connection.delete(pUserId);
   }
 }
 

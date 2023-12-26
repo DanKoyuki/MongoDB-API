@@ -7,20 +7,28 @@ app.use(express.json());
 
 // Connecting to MongoDB
 let mongoConnected = false; // Flag to check MongoDB connection status
+const mongoConnection = new Map();
 
 // API endpoint to connect to MongoDB
 app.post('/connectToMongoDB', async (req, res) => {
   try {
-    if (!mongoConnected) {
+
+    const userId = req.body.userId; // Assuming a unique identifier for each user
+
+    if (!userId) {
+      return res.status(400).send('User ID is missing in the request body');
+    }
+
+    if (!mongoConnection.has(userId)) {
       const uri = req.body.uri; // Assuming the URI is sent as 'uri' in the request body
 
       if (!uri) {
         return res.status(400).send('URI is missing in the request body');
       }
 
-      // Connect to MongoDB Atlas if not already connected
-      await connectionDB.connectToMongoDB(uri);
-      mongoConnected = true;
+      // Connect to MongoDB Atlas for the specific user
+      await connectionDB.connectToMongoDB(uri, userId);
+      mongoConnection.set(userId, true); // Set the connection status for this user to true
     }
     res.json({ message: 'Connected to MongoDB Atlas' });
   } catch (e) {
@@ -32,10 +40,14 @@ app.post('/connectToMongoDB', async (req, res) => {
 // Disconnect from MongoDB
 app.post('/disconnectFromMongoDB', async (req, res) => {
   try {
-    if (mongoConnected) {
-      await connectionDB.disconnectFromMongoDB();
-      mongoConnected = false;
+    const userId = req.body.userId;
+
+    if (!userId || !mongoConnection.has(userId)) {
+      return res.status(400).send('User ID not found or connection not established');
     }
+
+    await connectionDB.disconnectFromMongoDB();
+    mongoConnection.delete(userId);
     res.json({ message: 'Disconnected From Atlas'});
   } catch (e){
     console.error(e);
@@ -47,8 +59,9 @@ app.post('/disconnectFromMongoDB', async (req, res) => {
 app.post('/getDatabases', async (req, res) => {
   try {
     let list;
-    if (mongoConnected) {
-      list = await connectionDB.getListDatabases();
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
+      list = await connectionDB.getListDatabases(userId);
     }
     res.json({list});
   } catch (e) {
@@ -293,19 +306,6 @@ app.post('/insertDocument', async (req, res) => {
     res.status(500).send('Unable to Insert Document!');
   }
 });
-
-  app.post('/getDocumentII', async (req, res) => {
-    try {
-      let list;
-      if (mongoConnected) {
-        list = await connectionDB.getListDocument();
-      }
-      res.json({list});
-    } catch (e) {
-      console.error(e);
-      res.status(500).send('Unable to Retrieve Collections!')
-    }
-  });
 
   app.post('/selectDocumentII', async (req, res) => {
     try{
