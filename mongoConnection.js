@@ -4,13 +4,9 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 // instance used to take connection setting
 // selected_database used to take current working database
 // selected_collection used to take current working collection
-var instance;
-var selected_database;
-var selected_collection;
 const connection = new Map(); // new Version of instance
 const userDatabase = new Map(); // new Version of selected_database
 const userCollection = new Map(); // new Version of selected_collection
-
 
 // Connection Section
 // connectToMongoDB, create a connection to MongoDB Atlas Cluster using Connection String for node.js
@@ -50,10 +46,10 @@ async function disconnectFromMongoDB(pUserId){
 // Database Section
 // getListDatabases, return all database that exist in the cluster
 // return@list(db.name)
-async function getListDatabases(){
-  if (instance != null) {
+async function getListDatabases(pUserId){
+  if (connection.has(pUserId)) {
     try {
-      const databases = await instance.db().admin().listDatabases(); // Call listDatabases() with parentheses
+      const databases = await connection.get(pUserId).db().admin().listDatabases(); // Call listDatabases() with parentheses
       return databases.databases.map(db => db.name); // Extract only the database names
     } catch (error) {
       console.error('Error fetching databases:', error);
@@ -65,10 +61,10 @@ async function getListDatabases(){
 
 // createDatabase, Create new Database within the Cluster and populate it with dummyCollection
 // params@pDBName = Name of Database that will be created
-async function createDatabase(pDBName){
-  if (instance != null) {
+async function createDatabase(pDBName, pUserId){
+  if (connection.has(pUserId)) {
     try {
-      const db = await instance.db(pDBName);
+      const db = await connection.get(pUserId).db(pDBName);
 
       await db.createCollection('dummyCollection');
 
@@ -82,10 +78,10 @@ async function createDatabase(pDBName){
 
 // removeDatabase, Remove exist Database along with all collection within that database.
 // params@pDBName = Name of Database that will be removed
-async function removeDatabase(pDBName){
-  if (instance != null) {
+async function removeDatabase(pDBName, pUserId){
+  if (connection.has(pUserId)) {
     try {
-      const db = await instance.db(pDBName);
+      const db = await connection.get(pUserId).db(pDBName);
 
       await db.dropDatabase();
     } catch (error) {
@@ -97,12 +93,12 @@ async function removeDatabase(pDBName){
 
 // selectDatabase, Select an existing Database to work with.
 // params@pDBName = Name of Database to be selected
-async function selectDatabase(pDBName) {
-  if (instance != null) {
-    if (selected_database !== null) {
+async function selectDatabase(pDBName, pUserId) {
+  if (connection.has(pUserId)) {
+    if (userDatabase.has(pUserId)) {
       try {
         // Clean the previous selection
-        selected_database = null;
+        userDatabase.delete(pUserId);
       } catch (e) {
         throw e;
       }
@@ -110,7 +106,8 @@ async function selectDatabase(pDBName) {
     
     try {
       // Populate selected_database with the user selection from frontend
-      selected_database = instance.db(pDBName);
+      const selected_database = connection.get(pUserId).db(pDBName);
+      userDatabase.set(pUserId, selected_database)
     } catch (e) {
       throw e;
     }
@@ -120,10 +117,10 @@ async function selectDatabase(pDBName) {
 // Collection Section
 // getListCollection, get list of Collection Name that exist within a selected_database
 // return@list(collection.name)
-async function getListCollection() {
-  if (selected_database != null) {
+async function getListCollection(pUserId) {
+  if (userDatabase.has(pUserId)) {
     try {
-      const collectionsArray = await selected_database.listCollections().toArray();
+      const collectionsArray = await userDatabase.get(pUserId).listCollections().toArray();
       const collectionNames = collectionsArray.map(collection => collection.name);
       console.log('Collections:', collectionNames);
       return collectionNames;
@@ -138,33 +135,33 @@ async function getListCollection() {
 // removeACollection, remove existing Collection. This will also remove the Documents with in it.
 // selectCollection, select existing Collection to work with.
 // params@pCollectionName = Collection Name to be created, removed, selected
-async function createACollection(pCollectionName){
-  if (selected_database != null) {
+async function createACollection(pCollectionName, pUserId){
+  if (userDatabase.has(pUserId)) {
     try{
-      await selected_database.createCollection(pCollectionName);
+      await userDatabase.get(pUserId).createCollection(pCollectionName);
     } catch(err) {
       throw err
     }
   }
 }
 
-async function removeACollection(pCollectionName){
-  if (selected_database != null) {
+async function removeACollection(pCollectionName, pUserId){
+  if (userDatabase.has(pUserId)) {
     try{
-      await selected_database.dropCollection(pCollectionName);
+      await userDatabase.get(pUserId).dropCollection(pCollectionName);
     } catch(err) {
       throw err
     }
   }
 }
 
-async function selectCollection(pCollectionName){
+async function selectCollection(pCollectionName, pUserId){
 
-  if (selected_database !== null) {
-    if (selected_collection !== null) {
+  if (userDatabase.has(pUserId)) {
+    if (userCollection.has(pUserId)) {
       try {
         // Clean the previous selection
-        selected_collection = null;
+        userCollection.delete(pUserId);
       } catch (e) {
         throw e;
       }
@@ -172,7 +169,8 @@ async function selectCollection(pCollectionName){
     
     try {
       // Populate selected_collection with the user selection from frontend
-      selected_collection = selected_database.collection(pCollectionName)
+      const selected_collection = userDatabase.get(pUserId).collection(pCollectionName);
+      userCollection.set(pUserId, selected_collection);
     } catch (e) {
       throw e;
     }
@@ -182,10 +180,10 @@ async function selectCollection(pCollectionName){
 
 // Document Section
 
-async function getListDocument(){
-  if (selected_collection != null) {
+async function getListDocument(pUserId){
+  if (userCollection.has(pUserId)) {
     try {
-      const documents = await selected_collection.find().toArray();
+      const documents = await userCollection.get(pUserId).find({}, { _id: 1 }).toArray();
       return documents;
     } catch (error) {
       throw error 
@@ -193,11 +191,11 @@ async function getListDocument(){
   }
 }
 
-async function selectDocument(pID){
-  if (selected_collection != null) {
+async function selectDocument(pID, pUserId){
+  if (userCollection.has(pUserId)) {
     try {
       const query = {_id : pID};
-      const doc = await selected_collection.findOne(query);
+      const doc = await userCollection.get(pUserId).findOne(query);
       return doc; 
     } catch (error) {
       throw error;
@@ -205,11 +203,11 @@ async function selectDocument(pID){
   }
 }
 
-async function removeDocument(pID){
-  if (selected_collection != null) {
+async function removeDocument(pID, pUserId){
+  if (userCollection.has(pUserId)) {
     try {
       const query = {_id : pID};
-      await selected_collection.deleteOne(query);
+      await userCollection.get(pUserId).deleteOne(query);
       console.log("Document Removed!")
     } catch (error) {
       throw error;
@@ -217,8 +215,8 @@ async function removeDocument(pID){
   }
 }
 
-async function updateDocument(pID, pDoc){
-  if (selected_collection != null) {
+async function updateDocument(pID, pDoc, pUserId){
+  if (userCollection.has(pUserId)) {
     try {
       const filter = {_id : pID};
       const options = {upsert : true};
@@ -226,7 +224,7 @@ async function updateDocument(pID, pDoc){
         $set: pDoc
       };
       
-      await selected_collection.updateOne(filter, updateDocs, options);
+      await userCollection.get(pUserId).updateOne(filter, updateDocs, options);
       console.log("Document Updated");
     } catch (error) {
       throw error;
@@ -234,11 +232,10 @@ async function updateDocument(pID, pDoc){
   }
 }
 
-async function insertDocument(pDoc){
-  if (selected_collection != null) {
+async function insertDocument(pDoc, pUserId){
+  if (userCollection.has(pUserId)) {
     try {
-      const doc = await selected_collection.insertOne(pDoc);
-      return doc; 
+      await userCollection.get(pUserId).insertOne(pDoc);
     } catch (error) {
       throw error;
     }

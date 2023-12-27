@@ -6,11 +6,10 @@ const connectionDB = require('./mongoConnection');
 app.use(express.json());
 
 // Connecting to MongoDB
-let mongoConnected = false; // Flag to check MongoDB connection status
 const mongoConnection = new Map();
 
 // API endpoint to connect to MongoDB
-app.post('/connectToMongoDB', async (req, res) => {
+app.post('/mongoDB/connect', async (req, res) => {
   try {
 
     const userId = req.body.userId; // Assuming a unique identifier for each user
@@ -38,7 +37,7 @@ app.post('/connectToMongoDB', async (req, res) => {
 });
 
 // Disconnect from MongoDB
-app.post('/disconnectFromMongoDB', async (req, res) => {
+app.post('/mongoDB/disconnect', async (req, res) => {
   try {
     const userId = req.body.userId;
 
@@ -56,7 +55,7 @@ app.post('/disconnectFromMongoDB', async (req, res) => {
 });
 
 // Get List of Databases
-app.post('/getDatabases', async (req, res) => {
+app.post('/db', async (req, res) => {
   try {
     let list;
     const userId = req.body.userId;
@@ -71,16 +70,17 @@ app.post('/getDatabases', async (req, res) => {
 });
 
 // Create Database
-app.post('/createDatabase', async (req, res) => {
+app.post('/db/create', async (req, res) => {
   try {
-    if (mongoConnected) {
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const vDBName = req.body.vDBName;
 
       if (!vDBName) {
         return res.status(400).send('Database name is required');
       }
 
-      await connectionDB.createDatabase(vDBName);
+      await connectionDB.createDatabase(vDBName, userId);
       return res.json({ message: 'Database Created!' });
     }
     res.status(500).send('MongoDB not connected!');
@@ -91,16 +91,17 @@ app.post('/createDatabase', async (req, res) => {
 });
 
 // Remove Database
-app.post('/removeDatabase', async (req, res) => {
+app.post('/db/remove', async (req, res) => {
   try {
-    if (mongoConnected) {
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const vDBName = req.body.vDBName;
 
       if (!vDBName) {
         return res.status(400).send('Database name is required');
       }
 
-      await connectionDB.removeDatabase(vDBName);
+      await connectionDB.removeDatabase(vDBName, userId);
       return res.json({ message: 'Database Removed!' });
     }
     res.status(500).send('MongoDB not connected!');
@@ -111,16 +112,17 @@ app.post('/removeDatabase', async (req, res) => {
 });
 
 // Select Database
-app.post('/selectDatabase', async (req, res) => {
+app.post('/db/select', async (req, res) => {
   try {
-    if (mongoConnected){
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const vDBName = req.body.vDBName;
 
       if (!vDBName) {
         return res.status(400).send('Database name is required');
       }
 
-      await connectionDB.selectDatabase(vDBName);
+      await connectionDB.selectDatabase(vDBName, userId);
       return res.json({ message: 'Database Selected!'});
     }
   } catch (e) {
@@ -130,11 +132,13 @@ app.post('/selectDatabase', async (req, res) => {
 })
 
 // Get List Collection
-app.post('/getCollections', async (req, res) => {
+app.post('/collection', async (req, res) => {
   try {
+    
     let list;
-    if (mongoConnected) {
-      list = await connectionDB.getListCollection();
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
+      list = await connectionDB.getListCollection(userId);
     }
     res.json({list});
   } catch (e) {
@@ -144,16 +148,17 @@ app.post('/getCollections', async (req, res) => {
 })
 
 // Create Collection
-app.post('/createCollection', async (req, res) => {
+app.post('/collection/create', async (req, res) => {
   try {
-    if (mongoConnected) {
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const vCollectionName = req.body.vCollectionName;
 
       if (!vCollectionName) {
         return res.status(400).send('Collection name is required');
       }
 
-      await connectionDB.createACollection(vCollectionName);
+      await connectionDB.createACollection(vCollectionName, userId);
       return res.json({ message: 'Collection Created!' });
     }
     res.status(500).send('MongoDB not connected!');
@@ -164,16 +169,17 @@ app.post('/createCollection', async (req, res) => {
 });
 
 // Remove Collection
-app.post('/removeCollection', async (req, res) => {
+app.post('/collection/remove', async (req, res) => {
   try {
-    if (mongoConnected) {
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const vCollectionName = req.body.vCollectionName;
 
       if (!vCollectionName) {
         return res.status(400).send('Collection name is required');
       }
 
-      await connectionDB.removeACollection(vCollectionName);
+      await connectionDB.removeACollection(vCollectionName, userId);
       return res.json({ message: 'Collection Removed!' });
     }
     res.status(500).send('MongoDB not connected!');
@@ -184,16 +190,17 @@ app.post('/removeCollection', async (req, res) => {
 });
 
 // Select Collection
-app.post('/selectCollection', async (req, res) => {
+app.post('/collection/select', async (req, res) => {
   try {
-    if (mongoConnected){
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const vCollectionName = req.body.vCollectionName;
 
       if (!vCollectionName) {
         return res.status(400).send('Collection name is required');
       }
 
-      await connectionDB.selectCollection(vCollectionName);
+      await connectionDB.selectCollection(vCollectionName, userId);
       return res.json({ message: 'Collection Selected!'});
     }
   } catch (e) {
@@ -203,16 +210,11 @@ app.post('/selectCollection', async (req, res) => {
 })
 
 // Get List of Documents in a Collection
-app.post('/getDocuments', async (req, res) => {
+app.post('/documents', async (req, res) => {
   try {
-    if (mongoConnected) {
-      const vCollectionName = req.body.vCollectionName;
-
-      if (!vCollectionName) {
-        return res.status(400).send('Collection name is required');
-      }
-
-      const documents = await connectionDB.getListDocument(vCollectionName);
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
+      const documents = await connectionDB.getListDocument(userId);
       return res.json({ documents });
     }
     res.status(500).send('MongoDB not connected!');
@@ -223,17 +225,17 @@ app.post('/getDocuments', async (req, res) => {
 });
 
 // Select Document
-app.post('/selectDocument', async (req, res) => {
+app.post('/documents/select', async (req, res) => {
   try {
-    if (mongoConnected) {
-      const vCollectionName = req.body.vCollectionName;
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const pID = req.body.pID; // Assuming the document ID is sent in the request body
 
-      if (!vCollectionName || !pID) {
-        return res.status(400).send('Collection name and document ID are required');
+      if (!pID) {
+        return res.status(400).send('Document ID are required');
       }
 
-      const document = await connectionDB.selectDocument(pID);
+      const document = await connectionDB.selectDocument(pID, userId);
       return res.json({ document });
     }
     res.status(500).send('MongoDB not connected!');
@@ -244,17 +246,17 @@ app.post('/selectDocument', async (req, res) => {
 });
 
 // Remove Document
-app.post('/removeDocument', async (req, res) => {
+app.post('/documents/remove', async (req, res) => {
   try {
-    if (mongoConnected) {
-      const vCollectionName = req.body.vCollectionName;
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const pID = req.body.pID; // Assuming the document ID is sent in the request body
 
-      if (!vCollectionName || !pID) {
-        return res.status(400).send('Collection name and document ID are required');
+      if (!pID) {
+        return res.status(400).send('Document ID are required');
       }
 
-      await connectionDB.removeDocument(pID);
+      await connectionDB.removeDocument(pID, userId);
       return res.json({ message: 'Document Removed!' });
     }
     res.status(500).send('MongoDB not connected!');
@@ -265,19 +267,19 @@ app.post('/removeDocument', async (req, res) => {
 });
 
 // Update Document
-app.post('/updateDocument', async (req, res) => {
+app.post('/documents/update', async (req, res) => {
   try {
-    if (mongoConnected) {
-      const vCollectionName = req.body.vCollectionName;
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const pID = req.body.pID; // Assuming the document ID is sent in the request body
       const pDoc = req.body.pDoc; // Assuming the updated document is sent in the request body
 
-      if (!vCollectionName || !pID || !pDoc) {
-        return res.status(400).send('Collection name, document ID, and updated document are required');
+      if (!pID || !pDoc) {
+        return res.status(400).send('Document ID and updated document are required');
       }
 
-      await connectionDB.updateDocument(pID, pDoc);
-      return res.json({ message: 'Document Updated!' });
+      await connectionDB.updateDocument(pID, pDoc, userId);
+      return res.json({ message: 'Document Updated!' });  
     }
     res.status(500).send('MongoDB not connected!');
   } catch (e) {
@@ -287,18 +289,18 @@ app.post('/updateDocument', async (req, res) => {
 });
 
 // Insert Document
-app.post('/insertDocument', async (req, res) => {
+app.post('/documents/insert', async (req, res) => {
   try {
-    if (mongoConnected) {
-      const vCollectionName = req.body.vCollectionName;
+    const userId = req.body.userId;
+    if (mongoConnection.has(userId)) {
       const pDoc = req.body.pDoc; // Assuming the new document is sent in the request body
 
-      if (!vCollectionName || !pDoc) {
-        return res.status(400).send('Collection name and new document are required');
+      if (!pDoc) {
+        return res.status(400).send('New document are required');
       }
 
-      const insertedDoc = await connectionDB.insertDocument(pDoc);
-      return res.json({ message: 'Document Inserted!', insertedDoc });
+      await connectionDB.insertDocument(pDoc, userId);
+      return res.json({ message: 'Document Inserted!'});
     }
     res.status(500).send('MongoDB not connected!');
   } catch (e) {
@@ -306,31 +308,6 @@ app.post('/insertDocument', async (req, res) => {
     res.status(500).send('Unable to Insert Document!');
   }
 });
-
-  app.post('/selectDocumentII', async (req, res) => {
-    try{
-      let doc;
-      if(mongoConnected) {
-        doc = await connectionDB.selectDocument(req.body.ID);
-        res.json(doc);
-      }
-    } catch (e) {
-      console.log(e);
-      res.status(500).send("Unable to retrieve Document");
-    }
-  });
-
-  app.post('/removeDocument', (req, res) => {
-
-  });
-
-  app.post('/updateDocument', (req, res) => {
-
-  });
-
-  app.post('/createDocument', (req, res) => {
-
-  });
 
 // Server Test
 app.get('/', (req, res) => {
