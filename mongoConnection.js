@@ -217,8 +217,17 @@ async function selectDocument(pID, pUserId){
 async function removeDocument(pID, pUserId){
   if (userCollection.has(pUserId)) {
     try {
-      const query = {_id : pID};
-      await userCollection.get(pUserId).deleteOne(query);
+      let doc;
+      const queryObjectId = { _id: new ObjectId(pID) };
+
+      // Try querying with ObjectId() first
+      doc = await userCollection.get(pUserId).deleteOne(queryObjectId);
+
+      // If not found, try direct query
+      if (!doc) {
+        const queryDirect = { _id: pID };
+        doc = await userCollection.get(pUserId).deleteOne(queryDirect);
+      }
       console.log("Document Removed!")
     } catch (error) {
       throw error;
