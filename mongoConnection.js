@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // Helper,
 // instance used to take connection setting
@@ -196,7 +196,7 @@ async function selectDocument(pID, pUserId){
   if (userCollection.has(pUserId)) {
     try {
       let doc;
-      const queryObjectId = { _id: `ObjectId(${pID})` };
+      const queryObjectId = { _id: new ObjectId(pID) };
 
       // Try querying with ObjectId() first
       doc = await userCollection.get(pUserId).findOne(queryObjectId);
