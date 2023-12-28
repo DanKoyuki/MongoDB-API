@@ -213,11 +213,11 @@ app.post('/collection/select', async (req, res) => {
 app.post('/documents', async (req, res) => {
   try {
     const userId = req.body.userId;
+    let documents;
     if (mongoConnection.has(userId)) {
-      const documents = await connectionDB.getListDocument(userId);
-      return res.json({ documents });
+      documents = await connectionDB.getListDocument(userId); 
     }
-    res.status(500).send('MongoDB not connected!');
+    res.json({ documents });
   } catch (e) {
     console.error(e);
     res.status(500).send('Unable to Retrieve Documents!');
