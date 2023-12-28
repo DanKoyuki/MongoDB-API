@@ -195,20 +195,19 @@ async function getListDocument(pUserId){
 async function selectDocument(pID, pUserId){
   if (userCollection.has(pUserId)) {
     try {
-      try {
-        let doc;
-        const queryObjectId = { _id: ObjectId(pID) };
-  
-        // Try querying with ObjectId() first
-        doc = await userCollection.get(pUserId).findOne(queryObjectId);
-  
-        // If not found, try direct query
-        if (!doc) {
-          const queryDirect = { _id: pID };
-          doc = await userCollection.get(pUserId).findOne(queryDirect);
-        }
-  
-        return doc;
+      let doc;
+      const queryObjectId = { _id: ObjectId(pID) };
+
+      // Try querying with ObjectId() first
+      doc = await userCollection.get(pUserId).findOne(queryObjectId);
+
+      // If not found, try direct query
+      if (!doc) {
+        const queryDirect = { _id: pID };
+        doc = await userCollection.get(pUserId).findOne(queryDirect);
+      }
+
+      return doc;
     } catch (error) {
       throw error;
     }
