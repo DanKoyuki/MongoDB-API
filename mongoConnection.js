@@ -183,10 +183,11 @@ async function selectCollection(pCollectionName, pUserId){
 async function getListDocument(pUserId){
   if (userCollection.has(pUserId)) {
     try {
-      const documents = await userCollection.get(pUserId).find({}, { _id: 1 }).toArray();
-      return documents;
+      const documents = await userCollection.get(pUserId).find().toArray();
+      const documentIds = documents.map(doc => doc._id);
+      return documentIds;
     } catch (error) {
-      throw error 
+      throw error;
     }
   }
 }
