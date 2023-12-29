@@ -184,7 +184,7 @@ async function getListDocument(pUserId){
   if (userCollection.has(pUserId)) {
     try {
       const documents = await userCollection.get(pUserId).find().toArray();
-      const documentIds = documents.map(doc => doc._id);
+      const documentIds = documents.map(doc => doc._id.toString());
       console.log("Document ID list: ", documentIds);
       return documentIds;
     } catch (error) {
