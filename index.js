@@ -134,7 +134,6 @@ app.post('/db/select', async (req, res) => {
 // Get List Collection
 app.post('/collection', async (req, res) => {
   try {
-    
     let list;
     const userId = req.body.userId;
     if (mongoConnection.has(userId)) {
@@ -145,7 +144,7 @@ app.post('/collection', async (req, res) => {
     console.error(e);
     res.status(500).send('Unable to Retrieve Collections!')
   }
-})
+});
 
 // Create Collection
 app.post('/collection/create', async (req, res) => {
@@ -218,7 +217,7 @@ app.post('/documents', async (req, res) => {
       documents = await connectionDB.getListDocument(userId); 
     }
     console.log("Document from route: ", documents);
-    res.json({ documents });
+    res.json({documents});
   } catch (e) {
     console.error(e);
     res.status(500).send('Unable to Retrieve Documents!');
