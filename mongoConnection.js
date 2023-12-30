@@ -219,7 +219,9 @@ async function selectDocument(pID, pUserId){
 
             if (Array.isArray(value)) {
               stringValue = value.join(', ');
-            } else if (typeof value === 'object') {
+            } else if (key === '_id') {
+              stringValue = value.toString();
+            }else if (typeof value === 'object') {
               stringValue = 'The value is an object, sorry we do not support this type yet.';
             } else {
               stringValue = String(value);
