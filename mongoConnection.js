@@ -208,7 +208,31 @@ async function selectDocument(pID, pUserId){
         doc = await userCollection.get(pUserId).findOne(queryDirect);
       }
 
-      return doc;
+      let newDoc = {}; // New document to store transformed values
+
+      // Iterating through document attributes/properties
+      if (doc) {
+        for (const key in doc) {
+          if (Object.prototype.hasOwnProperty.call(doc, key)) {
+            const value = doc[key];
+            let stringValue = '';
+
+            if (Array.isArray(value)) {
+              stringValue = value.join(', ');
+            } else if (typeof value === 'object') {
+              stringValue = 'The value is an object, sorry we do not support this type yet.';
+            } else {
+              stringValue = String(value);
+            }
+
+            // Store transformed value in the new document with the same key
+            newDoc[key] = stringValue;
+          }
+        }
+      }
+
+      // Returning the new document with transformed values
+      return newDoc;
     } catch (error) {
       throw error;
     }
