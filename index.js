@@ -216,7 +216,6 @@ app.post('/documents', async (req, res) => {
     if (mongoConnection.has(userId)) {
       list = await connectionDB.getListDocument(userId); 
     }
-    console.log("Document from route: ", documents);
     res.json({list});
   } catch (e) {
     console.error(e);
