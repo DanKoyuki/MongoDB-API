@@ -211,13 +211,13 @@ app.post('/collection/select', async (req, res) => {
 // Get List of Documents in a Collection
 app.post('/documents', async (req, res) => {
   try {
-    let documents;
+    let list;
     const userId = req.body.userId;
     if (mongoConnection.has(userId)) {
-      documents = await connectionDB.getListDocument(userId); 
+      list = await connectionDB.getListDocument(userId); 
     }
     console.log("Document from route: ", documents);
-    res.json({documents});
+    res.json({list});
   } catch (e) {
     console.error(e);
     res.status(500).send('Unable to Retrieve Documents!');
