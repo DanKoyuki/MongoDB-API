@@ -39,6 +39,8 @@ async function connectToMongoDB(pConnectionString, pUserId) {
 async function disconnectFromMongoDB(pUserId){
   if (connection.has(pUserId)) {
     await connection.get(pUserId).close();
+    userCollection.delete(pUserId);
+    userDatabase.delete(pUserId);
     connection.delete(pUserId);
   }
 }
