@@ -19,7 +19,7 @@ app.post('/mongoDB/connect', async (req, res) => {
     }
 
     if (!mongoConnection.has(userId)) {
-      const uri = req.body.uri; // Assuming the URI is sent as 'uri' in the request body
+      let uri = req.body.uri; // Assuming the URI is sent as 'uri' in the request body
 
       if (!uri) {
         return res.status(400).send('URI is missing in the request body');
@@ -28,6 +28,7 @@ app.post('/mongoDB/connect', async (req, res) => {
       // Connect to MongoDB Atlas for the specific user
       await connectionDB.connectToMongoDB(uri, userId);
       mongoConnection.set(userId, true); // Set the connection status for this user to true
+      uri = null;
     }
     res.json({ message: 'Connected to MongoDB Atlas' });
   } catch (e) {
